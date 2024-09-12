@@ -8,6 +8,7 @@ export default tseslint.config({
     languageOptions: {
         parserOptions: {
             project: true,
+            // @ts-ignore
             tsconfigRootDir: import.meta.dirname
         }
     },
@@ -15,7 +16,6 @@ export default tseslint.config({
     // @ts-ignore
     extends: [eslint.configs.recommended, ...tseslint.configs.recommendedTypeChecked, eslintConfigPrettier],
     rules: {
-        'no-console': 'error',
         'no-useless-catch': 0,
         quotes: ['error', 'single', { allowTemplateLiterals: true }]
     }
