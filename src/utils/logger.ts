@@ -6,6 +6,7 @@ import util from 'util'
 import { red, blue, yellow, green, magenta } from 'colorette'
 import path from 'path'
 import * as sourceMapSupport from 'source-map-support'
+import { MongoDBTransportInstance } from 'winston-mongodb'
 
 // Linking Trace Support
 sourceMapSupport.install()
@@ -28,7 +29,7 @@ const consoleLogFormat = format.printf((info) => {
     const { level, message, timestamp, meta = {} } = info
 
     const customLevel = colorizeLevel(level.toUpperCase())
-     
+
     const customTimestamp = green(timestamp as string)
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -99,9 +100,24 @@ const consoleTransport = (): Array<ConsoleTransportInstance> => {
     return []
 }
 
+const MongodbTransport = (): Array<MongoDBTransportInstance> => {
+    return [
+        new transports.MongoDB({
+            level: 'info',
+            db: config.DATABASE_URL as string,
+            metaKey: 'meta',
+            expireAfterSeconds: 3600 * 24 * 30,
+            options: {
+                useUnifiedTopology: true
+            },
+            collection: 'application-logs'
+        })
+    ]
+}
+
 export default createLogger({
     defaultMeta: {
         meta: {}
     },
-    transports: [...consoleTransport(), ...FileTransport()]
+    transports: [...consoleTransport(), ...FileTransport(), ...MongodbTransport()]
 })
